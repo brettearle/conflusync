@@ -1,1 +1,2 @@
-console.log("hello motto");
+import getMDFiles from "./fileManipulation.js";
+await getMDFiles("./");

@@ -7,8 +7,11 @@
   "scripts": {
     "build": "tsc",
     "predev": "npm run build",
-    "dev": "node ./build/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon --exec npm run start",
+    "prestart": "npm run build",
+    "start": "node ./build/index.js",
+    "pretest": "npm run build",
+    "test": "node --test ./build/**.test.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +19,7 @@
   "devDependencies": {
     "@types/node": "^20.12.8",
     "eslint": "^9.2.0",
+    "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5"
   }
