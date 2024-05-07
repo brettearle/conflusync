@@ -1,5 +1,5 @@
 import { describe, it } from "node:test";
-import getListOfMDFiles, { createPayload } from "./fileManipulation.js";
+import getListOfMDFiles, { makeConfReq, readMDFile } from "./fileManipulation.js";
 import assert from "node:assert";
 import fs from "node:fs";
 
@@ -39,21 +39,28 @@ describe("getListOfMDFiles with md files that do not exist", async () => {
   });
 });
 
-describe("createPayload", async () => {
-  it("should take a path to file and return a payload fitting confluence api", async () => {
+describe("readFile", () => {
+  it("should return contents of single file", async () => {
     setUp()
-    const got = createPayload("./testFiles/file1.md")
-    const want = {
-      spaceId: "",
-      status: "current",
-      title: "",
-      parentId: "",
-      body: {
-        representation: "storage",
-        value: ""
-      }
-    }
-    assert.deepStrictEqual(got, want)
+    const got = await readMDFile("./testFiles/file1.md")
+    const want = "Hello World"
+    assert.equal(got, want)
+    tearDown()
   });
+
+  it("throws if path to file doesn't exist", async () => {
+    await assert.rejects(() => readMDFile("nonExistentPath"))
+  });
+
+  it("throws on wrong path with msg: Path Invalid", async () => {
+    await assert.rejects(() => readMDFile("nonExistentPath"), { message: "Path Invalid" })
+  });
+});
+
+describe("makeConfRequest", async () => {
+  it("should be a Request", async () => {
+    const got = await makeConfReq()
+    assert(got instanceof Request)
+  })
 })
 

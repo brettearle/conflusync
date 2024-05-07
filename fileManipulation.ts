@@ -12,10 +12,22 @@ const getMDFiles = async (path: string) => {
 
 };
 
-const createPayload = (path: string) => {
-  console.log(path)
+const readMDFile = async (pathToFile: string) => {
+  let contents
+  try {
+    contents = await fs.readFile(pathToFile)
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      throw new Error("Path Invalid", { cause: err })
+    }
+  }
+  return contents
+}
+
+const makeConfReq = async () => {
   return {}
 }
 
+
 export default getMDFiles;
-export { createPayload };
+export { readMDFile, makeConfReq }

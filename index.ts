@@ -1,2 +1,4 @@
 import getMDFiles from "./fileManipulation.js";
-await getMDFiles("./");
+
+const fileList = await getMDFiles("./");
+
