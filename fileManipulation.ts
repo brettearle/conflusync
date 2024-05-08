@@ -24,8 +24,13 @@ const readMDFile = async (pathToFile: string) => {
   return contents
 }
 
-const makeConfReq = async () => {
-  return {}
+type confTestURL = "http://fakeurlthatdoesntexistontheweb.unknown"
+
+type confAPIUrls = confTestURL
+
+const makeConfReq = async (url: confAPIUrls, contents: string) => {
+  const req = new Request(url, { method: "POST" })
+  return req
 }
 
 

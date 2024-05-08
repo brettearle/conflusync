@@ -58,9 +58,29 @@ describe("readFile", () => {
 });
 
 describe("makeConfRequest", async () => {
+  const nonExistentUrl = "http://fakeurlthatdoesntexistontheweb.unknown"
   it("should be a Request", async () => {
-    const got = await makeConfReq()
+    const got = await makeConfReq(nonExistentUrl, "unused contents in this test")
     assert(got instanceof Request)
   })
+
+  it("should have the url passed in", async () => {
+    const builtReq = await makeConfReq(nonExistentUrl, "unused contents in this test")
+    const got = builtReq.url.toString().slice(0, -1)
+    assert.strictEqual(got, nonExistentUrl.toString())
+  })
+
+  it("should be a POST", async () => {
+    const got = await makeConfReq(nonExistentUrl, "unused contents in this test")
+    assert.strictEqual(got.method, "POST")
+  })
+
+  it("should have a body of contents passed in", async () => {
+    const builtReq = await makeConfReq(nonExistentUrl, "body content under test")
+    const got = builtReq.body
+    const want = "body content under test"
+    assert.strictEqual(got, want)
+  })
 })
+
 
