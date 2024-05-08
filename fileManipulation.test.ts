@@ -1,5 +1,5 @@
 import { describe, it } from "node:test";
-import getListOfMDFiles, { makeConfReq, readMDFile } from "./fileManipulation.js";
+import getListOfMDFiles, { ConfAPIUrls, ConfPage, makeConfReq, newConfPage, readMDFile } from "./fileManipulation.js";
 import assert from "node:assert";
 import fs from "node:fs";
 
@@ -57,28 +57,81 @@ describe("readFile", () => {
   });
 });
 
+
+
+describe("conf page builders", async () => {
+  it("newConfPageMeta should return the meta fields as an object", () => {
+    const got = newConfPageMeta("spaceID", "draft", "title", "parent")
+    const want = {
+      spaceId: "spaceID",
+      status: "draft",
+      title: "title",
+      parentId: "parent",
+    }
+    assert.deepEqual(got, want)
+  })
+
+  it("newConfPage should return a confluence page object", () => {
+    const got = newConfPage({
+      spaceId: "spaceID",
+      status: "draft",
+      title: "title",
+      parentId: "parent",
+    }, {
+      body: {
+        representation: "storage",
+        value: "body content goes here"
+      }
+    })
+    const want = {
+      spaceId: "spaceID",
+      status: "draft",
+      title: "title",
+      parentId: "parent",
+      body: {
+        representation: "storage",
+        value: "body content goes here"
+      }
+    }
+    assert.deepEqual(got, want)
+  })
+})
+
 describe("makeConfRequest", async () => {
-  const nonExistentUrl = "http://fakeurlthatdoesntexistontheweb.unknown"
+  const testContents: ConfPage = {
+    spaceId: "string",
+    status: "draft",
+    title: "string",
+    parentId: "string",
+    body: {
+      representation: "storage",
+      value: "body content goes here"
+    }
+  }
+
+  const nonExistentUrl: ConfAPIUrls = "http://fakeurlthatdoesntexistontheweb.unknown"
+
   it("should be a Request", async () => {
-    const got = await makeConfReq(nonExistentUrl, "unused contents in this test")
+    const got = await makeConfReq(nonExistentUrl, testContents)
     assert(got instanceof Request)
   })
 
   it("should have the url passed in", async () => {
-    const builtReq = await makeConfReq(nonExistentUrl, "unused contents in this test")
+    const builtReq = await makeConfReq(nonExistentUrl, testContents)
     const got = builtReq.url.toString().slice(0, -1)
     assert.strictEqual(got, nonExistentUrl.toString())
   })
 
   it("should be a POST", async () => {
-    const got = await makeConfReq(nonExistentUrl, "unused contents in this test")
+    const got = await makeConfReq(nonExistentUrl, testContents)
     assert.strictEqual(got.method, "POST")
   })
 
   it("should have a body of contents passed in", async () => {
-    const builtReq = await makeConfReq(nonExistentUrl, "body content under test")
-    const got = builtReq.body
-    const want = "body content under test"
+    const builtReq = await makeConfReq(nonExistentUrl, testContents)
+    const reqBody = await builtReq.json()
+    const got = reqBody.body.value
+    const want = "body content goes here"
     assert.strictEqual(got, want)
   })
 })

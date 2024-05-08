@@ -24,15 +24,32 @@ const readMDFile = async (pathToFile: string) => {
   return contents
 }
 
-type confTestURL = "http://fakeurlthatdoesntexistontheweb.unknown"
+type ConfTestURL = "http://fakeurlthatdoesntexistontheweb.unknown"
+export type ConfAPIUrls = ConfTestURL
 
-type confAPIUrls = confTestURL
+export type ConfPage = {
+  spaceId: string,
+  status: "current" | "draft",
+  title: string,
+  parentId: string,
+  body: {
+    representation: "storage" | "atlas_doc_format" | "wiki",
+    value: string
+  }
+}
 
-const makeConfReq = async (url: confAPIUrls, contents: string) => {
-  const req = new Request(url, { method: "POST" })
+type ConfPageMeta = Omit<ConfPage, "body">
+type ConfPageBody = Pick<ConfPage, "body">
+
+const newConfPage = (meta: ConfPageMeta, body: ConfPageBody): ConfPage => {
+  return { ...meta, ...body }
+}
+
+const makeConfReq = async (url: ConfAPIUrls, contents: ConfPage) => {
+  const req = new Request(url, { method: "POST", body: JSON.stringify(contents) })
   return req
 }
 
 
 export default getMDFiles;
-export { readMDFile, makeConfReq }
+export { readMDFile, makeConfReq, newConfPage }
